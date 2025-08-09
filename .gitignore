@@ -1,0 +1,9 @@
+node_modules/
+build/
+dist/
+*.exe
+*.o
+*.out
+*.log
+.vscode/
+.DS_Store
