@@ -4,7 +4,7 @@ import axios from "axios";
 export default function AddWord() {
   const [word, setWord] = useState("");
   const [msg, setMsg] = useState("");
-  const BASE_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8080";
+  const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 const handleAdd = () => {
   if (!word.trim()) return;

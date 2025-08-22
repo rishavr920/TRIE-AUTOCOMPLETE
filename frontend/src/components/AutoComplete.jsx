@@ -6,7 +6,7 @@ export default function AutoComplete(){
   const [q, setQ] = useState('')
   const [sugs, setSugs] = useState([])
   const [loading, setLoading] = useState(false)
-  const BASE_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8080";
+  const BASE_URL = import.meta.env.VITE_BACKEND_URL ;
 
   useEffect(()=>{
     if(q.length===0){ 

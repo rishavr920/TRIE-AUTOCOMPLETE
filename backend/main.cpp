@@ -2,13 +2,24 @@
 #include "httplib.h"
 #include "trie.h"
 #include <nlohmann/json.hpp>
+#include <fstream>
+#include <string>
+
 using json = nlohmann::json;
 
 int main()
 {
     Trie trie;
 
-    // Preload kuch demo words
+    // --- Load from file ---
+    std::ifstream fin("words.txt");
+    std::string w;
+    while (fin >> w) {
+        trie.insert(w);
+    }
+    fin.close();
+
+    // Preload demo words (if you still want)
     trie.insert("apple");
     trie.insert("app");
     trie.insert("application");
@@ -25,18 +36,25 @@ int main()
         res.set_header("Access-Control-Allow-Headers", "Content-Type");
 
         if (req.method == "OPTIONS") {
-            res.status = 204;  // No Content
+            res.status = 204;
             return httplib::Server::HandlerResponse::Handled;
         }
         return httplib::Server::HandlerResponse::Unhandled;
     });
 
-    // --- Insert word (in-memory only, no file) ---
+    // --- Insert word ---
     svr.Post("/insert", [&](const httplib::Request& req, httplib::Response& res) {
         try {
             auto body = json::parse(req.body);
             std::string word = body["word"];
-            trie.insert(word);   // ✅ only in TRIE, no file
+
+            trie.insert(word);
+
+            // append to file so it survives restart
+            std::ofstream fout("words.txt", std::ios::app);
+            fout << word << "\n";
+            fout.close();
+
             res.set_content(R"({"status":"word added"})", "application/json");
         } catch (...) {
             res.status = 400;
