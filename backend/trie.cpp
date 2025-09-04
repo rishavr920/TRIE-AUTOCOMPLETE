@@ -1,5 +1,13 @@
 #include "trie.h"
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+#include <nlohmann/json.hpp>
 
+using json = nlohmann::json;
+
+// --- Trie class implementation ---
 Trie::Trie() {
     root = new TrieNode();
 }
@@ -13,11 +21,11 @@ void Trie::insert(const std::string& word) {
     node->isEnd = true;
 }
 
-void Trie::dfs(TrieNode* node, std::string prefix, std::vector<std::string>& results) {
+void Trie::dfs(TrieNode* node, const std::string& prefix, std::vector<std::string>& results) {
     if (!node) return;
     if (node->isEnd) results.push_back(prefix);
     for (const auto& child : node->children) {
-        if (child.second) {  // extra safety check
+        if (child.second) {
             dfs(child.second, prefix + child.first, results);
         }
     }
@@ -33,4 +41,47 @@ std::vector<std::string> Trie::autocomplete(const std::string& prefix) {
     std::vector<std::string> results;
     dfs(node, prefix, results);
     return results;
+}
+
+// --- CLI wrapper (for Node.js integration) ---
+int main(int argc, char* argv[]) {
+    if (argc < 3) {
+        std::cerr << "Usage: ./trie [insert|autocomplete] <word/prefix>\n";
+        return 1;
+    }
+
+    Trie trie;
+
+    // Load existing words from file
+    std::ifstream fin("words.txt");
+    std::string w;
+    while (fin >> w) {
+        trie.insert(w);
+    }
+    fin.close();
+
+    std::string command = argv[1];
+    std::string input   = argv[2];
+
+    if (command == "insert") {
+        trie.insert(input);
+
+        // Save word to file
+        std::ofstream fout("words.txt", std::ios::app);
+        fout << input << "\n";
+        fout.close();
+
+        std::cout << "word added" << std::endl;
+    }
+    else if (command == "autocomplete") {
+        auto results = trie.autocomplete(input);
+        json j = results;
+        std::cout << j.dump() << std::endl;  // JSON array for Node
+    }
+    else {
+        std::cerr << "Unknown command\n";
+        return 1;
+    }
+
+    return 0;
 }

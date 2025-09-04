@@ -1,21 +1,18 @@
-# Use official C++ image with cmake & build tools
+# Use Ubuntu with build tools
 FROM ubuntu:22.04
 
+# Install compiler + cmake + json lib
 RUN apt-get update && apt-get install -y \
-    build-essential cmake git curl \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install dependencies for httplib and nlohmann json
-RUN apt-get update && apt-get install -y \
-    nlohmann-json3-dev \
+    build-essential cmake git curl nlohmann-json3-dev \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
+# Copy source files
 COPY . .
 
+# Build trie binary
 RUN cmake -B build -S . && cmake --build build
 
-EXPOSE 8080
-
-CMD ["./build/trie_server"]
+# Default command (runs trie help if no args given)
+CMD ["./build/trie", "--help"]
