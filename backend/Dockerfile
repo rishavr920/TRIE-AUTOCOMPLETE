@@ -1,18 +1,25 @@
-# Use Ubuntu with build tools
-FROM ubuntu:22.04
+FROM node:18
 
-# Install compiler + cmake + json lib
+# Install C++ build tools & json lib
 RUN apt-get update && apt-get install -y \
     build-essential cmake git curl nlohmann-json3-dev \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Copy source files
+# Copy package.json first for caching
+COPY package*.json ./
+
+# Install Node dependencies
+RUN npm install
+
+# Copy all source files
 COPY . .
 
-# Build trie binary
+# Build C++ trie binary
 RUN cmake -B build -S . && cmake --build build
 
-# Default command (runs trie help if no args given)
-CMD ["./build/trie", "--help"]
+EXPOSE 8080
+
+# Start Node server
+CMD ["npm", "start"]
