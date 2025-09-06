@@ -18,7 +18,7 @@ This project implements an **Autocomplete Engine** using a **C++ Trie Data Struc
 
 The architecture is designed to keep frontend, backend, and data structure logic modular and maintainable.
 
-![System Architecture](./images/system_architecture.png)
+![System Architecture](./system_architecture.png)
 
 **Explanation:**
 - **Dockerized Deployment** → Deploys both frontend and backend services  
@@ -34,7 +34,7 @@ The architecture is designed to keep frontend, backend, and data structure logic
 
 Here’s how a typical user query flows through the system:
 
-![Request Workflow](./images/request_workflow.png)
+![Request Workflow](./request_workflow.png)
 
 **Step-by-step:**
 1. User types `"app"` in the frontend search box.  
